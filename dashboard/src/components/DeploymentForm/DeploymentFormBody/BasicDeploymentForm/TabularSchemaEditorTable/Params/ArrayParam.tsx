@@ -191,12 +191,9 @@ export default function ArrayParam(props: IArrayParamProps) {
             <ObjectParam
               id={`${id}-${index}`}
               label={`${label}[${index}]`}
-              param={{
-                ...param,
-                currentValue: currentArrayItems[index] ?? {},
-              }}
+              param={{ ...param, currentValue: currentArrayItems[index] ?? {} }}
 
-              handleBasicFormParamChange={p => e => {
+              handleBasicFormParamChange={() => e => {
                 try {
                   const raw = JSON.parse(e.currentTarget.value || "{}");
                   const obj =

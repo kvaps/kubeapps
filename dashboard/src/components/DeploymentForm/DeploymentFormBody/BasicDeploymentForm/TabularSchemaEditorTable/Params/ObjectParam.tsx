@@ -5,15 +5,15 @@ import { CdsInput } from "@cds/react/input";
 import Column from "components/Column";
 import Row from "components/Row";
 import { isEmpty } from "lodash";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { validateValuesSchema } from "shared/schema";
 import { IAjvValidateResult, IBasicFormParam } from "shared/types";
 import { basicFormsDebounceTime, getStringValue } from "shared/utils";
 
 export interface IObjectParamProps {
   id: string;
-  label: string;
-  param: IBasicFormParam;           // здесь schema.type === "object"
+  label?: string;
+  param: IBasicFormParam;
   handleBasicFormParamChange: (
     p: IBasicFormParam,
   ) => (e: React.FormEvent<HTMLInputElement>) => void;
@@ -27,11 +27,10 @@ interface IEntry {
 
 export default function ObjectParam({
   id,
-  label,
+  label: _label,
   param,
   handleBasicFormParamChange,
 }: IObjectParamProps) {
-  // превращаем {foo:"bar"} -> [{k:"foo",v:"bar"}]
   const [entries, setEntries] = useState<IEntry[]>(() => {
     try {
       const obj = param.currentValue ?? {};
@@ -81,8 +80,10 @@ export default function ObjectParam({
       entries[idx] = { ...entries[idx], [field]: e.currentTarget.value };
       setEntries([...entries]);
 
-      // ajv + native HTML валидации
-      setValidated(validateValuesSchema(toObject(), param.schema));
+      // ajv + native HTML
+      setValidated(
+        validateValuesSchema(getStringValue(toObject()), param.schema),
+      );
       e.currentTarget.reportValidity();
 
       propagate();
@@ -136,7 +137,7 @@ export default function ObjectParam({
               />
             </CdsInput>
           </Column>
-          <Column span={1} className="self-center">
+          <Column span={1}>
             <CdsButton
               action="flat"
               size="sm"
